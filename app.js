@@ -12,10 +12,10 @@ app.get("/",(req,res)=>{
 //If anything else is requested that's an error
 app.get("*",(req,res)=>{
     res.send("Ooops... Bad Gateway!");
-    res.sendStatus(404);
+    //res.sendStatus(404);
     res.end('Cannot ' + req.method + ' ' + req.url);
 })
 //Start the server
 app.listen(PORT,()=>{
     console.log(`Eth ToDo is running on port ${PORT}`);
-});
+})

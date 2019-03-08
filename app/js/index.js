@@ -7,6 +7,8 @@ import artifact from '../../contracts/ToDo.sol'
 import Web3 from 'web3';
 import TruffleContract from 'truffle-contract';
 import config from './config.js';
+import {renderTasks} from './lib/render';
+
 
 $(()=>{
   const web3 = new Web3(new Web3.providers.HttpProvider(config.ethereumUrl));
@@ -25,7 +27,9 @@ $(()=>{
   .then((todo)=>{
       return todo.getTaskFixtures(0) 
   })
-  .then(console.log);
+  .then((task)=>{
+    renderTasks($('#tasks'),[task]);
+  });
 })
 
 
