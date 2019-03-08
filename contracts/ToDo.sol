@@ -5,7 +5,7 @@ contract ToDo {
     //@title This contract is to create structure of task and includes functions for CRUD
     //@author Medha Pandey
 
-    event CreateTask(uint ,uint ,string ,string ,bool );
+    event CreateTask(uint id,uint date,string content,string author,bool done);
   
     struct Task{
         uint id;
@@ -37,7 +37,7 @@ contract ToDo {
         lastTaskId++;
         tasks[lastTaskId] = Task(lastTaskId,block.timestamp,_content,_author,false);
         taskIds.push(lastTaskId);
-        emit CreateTask(lastTaskId--,block.timestamp,_content,_author,false);
+        emit CreateTask(lastTaskId,block.timestamp,_content,_author,false);
     }
 
     //@dev Get a task
@@ -57,5 +57,15 @@ contract ToDo {
         return taskIds;
     } 
 
+    //@fixture function 
+    function getTaskFixtures(uint _id) public view returns(
+        uint,
+        uint,
+        string memory,
+        string memory,
+        bool
+        ) {
+        return (0, block.timestamp, "I am working", "Medha", false); 
+    }
    
 }
