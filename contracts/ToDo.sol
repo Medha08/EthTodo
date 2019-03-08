@@ -6,12 +6,13 @@ contract ToDo {
     //@author Medha Pandey
 
     event CreateTask(uint id,uint date,string content,string author,bool done);
-  
+    event TaskStatusToggled(uint id, bool done);
+    
     struct Task{
         uint id;
         uint date;
         string content;
-        string author;
+        string author;    
         bool done;
     }
 
@@ -38,6 +39,7 @@ contract ToDo {
         tasks[lastTaskId] = Task(lastTaskId,block.timestamp,_content,_author,false);
         taskIds.push(lastTaskId);
         emit CreateTask(lastTaskId,block.timestamp,_content,_author,false);
+        
     }
 
     //@dev Get a task
@@ -47,7 +49,7 @@ contract ToDo {
         uint,
         string memory,
         string memory,
-        bool 
+        bool
     ){
         return(_id,tasks[_id].date,tasks[_id].content,tasks[_id].author,tasks[_id].done);
     }
@@ -66,6 +68,13 @@ contract ToDo {
         bool
         ) {
         return (0, block.timestamp, "I am working", "Medha", false); 
+    }
+
+    //@dev TaskDateToggled
+    function toggleDone(uint _id) taskExists(_id) public{
+        Task storage task = tasks[_id];
+        task.done = !task.done;
+        emit TaskStatusToggled(_id, task.done);
     }
    
 }

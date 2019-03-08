@@ -3,6 +3,7 @@ import Web3 from 'web3';
 import TruffleContract from 'truffle-contract'; 
 import artifact from '../../../contracts/ToDo.sol'; 
 import { renderTasks } from './render';
+import { getAccount,getTasks } from './actions';
 
 class App { 
     //accepts config and store it used in other functions of app object
@@ -26,12 +27,19 @@ class App {
     this.address = address;
     this.Todo = Todo;
     this.$tasks = $('#tasks');
+    this.$newTask = $('#new-task'); 
+    this.$taskContent = $('#task-content'); 
+    this.$taskAuthor = $('#task-author');
 
     return new Promise((resolve, reject) => {
-      Todo.at(address)
+      getAccount(this.web3)
+      .then((account) => {
+        this.account = account;
+        return Todo.at(address);
+      })
       .then((todo) => {
-         this.todo = todo;
-         resolve(todo);
+        this.todo = todo;
+        resolve(todo);
       })
       .catch((error) => {
         reject(error);
@@ -39,14 +47,37 @@ class App {
     });   
   }
 
-  init() { 
-    return new Promise((resolve, reject) => { 
-      this.todo.getTaskFixtures(0)
-      .then((task) => { 
-        renderTasks(this.$tasks, [task]);  
-      }); 
-    }); 
-  } 
+  getAndRenderTasks() {
+    getTasks(this.todo)
+      .then((tasks) => renderTasks(this.$tasks, tasks));
+  }
+
+  init() {
+    this.$newTask.on('submit', (event) => {
+      event.preventDefault();
+
+      this.todo.createTask(
+        this.$taskContent.val(),
+        this.$taskAuthor.val(),
+        { from: this.account, gas: 1000000 }
+      ).then(() => {
+        this.$taskContent.val('')
+        this.$taskAuthor.val('')
+        this.getAndRenderTasks()
+      })
+    });
+
+    this.$tasks.on('click', (event) => {
+      if($(event.target).is('input')) {
+        const [,id] = event.target.id.split('-')
+        this.todo.toggleDone(id, { from: this.account, gas: 1000000 })
+          .then(() => this.getAndRenderTasks())
+      }
+    })
+
+    this.getAndRenderTasks()
+  }
 }
+
 
 export default App;
